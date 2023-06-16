@@ -1,5 +1,6 @@
 ﻿using JobBoard.Application.Common.Interfaces.Authentication;
 using JobBoard.Application.Common.Interfaces.Services;
+using JobBoard.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -24,7 +25,7 @@ namespace JobBoard.Infrastructure.Authentication
             _jwtSettings = jwtOptions.Value;
         }
 
-        public string GenerateToken(Guid userid, string companyName)
+        public string GenerateToken(CompanyUser companyUser)
         {
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(
@@ -33,8 +34,8 @@ namespace JobBoard.Infrastructure.Authentication
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userid.ToString()),
-                new Claim(JwtRegisteredClaimNames.Name, companyName),
+                new Claim(JwtRegisteredClaimNames.Sub, companyUser.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, companyUser.CompanyName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 

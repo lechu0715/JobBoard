@@ -20,7 +20,11 @@ namespace JobBoard.API.Controllers
         {
             var authResult = _authenticationService.Register(request.CompanyName, request.Email, request.Password);
 
-            var response = new AuthenticationResponse(authResult.Id, authResult.CompanyName, authResult.Email, authResult.Token);
+            var response = new AuthenticationResponse(
+                authResult.CompanyUser.Id,
+                authResult.CompanyUser.CompanyName,
+                authResult.CompanyUser.Email,
+                authResult.Token);
             return Ok(response);
         }
 
@@ -29,7 +33,11 @@ namespace JobBoard.API.Controllers
         {
             var authResult = _authenticationService.Login(request.Email, request.Password);
 
-            var response = new AuthenticationResponse(authResult.Id, authResult.CompanyName, authResult.Email, authResult.Token);
+            var response = new AuthenticationResponse(
+                authResult.CompanyUser.Id,
+                authResult.CompanyUser.CompanyName,
+                authResult.CompanyUser.Email,
+                authResult.Token);
             return Ok(response);
         }
     }

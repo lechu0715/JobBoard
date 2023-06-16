@@ -25,9 +25,9 @@ namespace JobBoard.Application.Services.Authentication
             var companyUser = new CompanyUser { CompanyName = companyName, Email = email, Password = password };
             _companyUserRepository.Add(companyUser);
 
-            var token = _jwtTokenGenerator.GenerateToken(companyUser.Id, companyName);
+            var token = _jwtTokenGenerator.GenerateToken(companyUser);
 
-            return new AuthenticationResult(companyUser.Id, companyName, email, token);
+            return new AuthenticationResult(companyUser, token);
         }
 
         public AuthenticationResult Login(string email, string password)
@@ -42,9 +42,9 @@ namespace JobBoard.Application.Services.Authentication
                 throw new Exception("Invalid Password.");
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(companyUser.Id, companyUser.CompanyName);
+            var token = _jwtTokenGenerator.GenerateToken(companyUser);
 
-            return new AuthenticationResult(companyUser.Id, companyUser.CompanyName, email, token);
+            return new AuthenticationResult(companyUser, token);
         }
     }
 }
