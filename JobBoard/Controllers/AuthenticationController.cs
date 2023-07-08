@@ -1,4 +1,5 @@
-﻿using JobBoard.Application.Services.Authentication;
+﻿using JobBoard.Application.Services.Authentication.Commands;
+using JobBoard.Application.Services.Authentication.Queries;
 using JobBoard.Contracts.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,17 +9,19 @@ namespace JobBoard.API.Controllers
     [Route("auth")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IAuthenticationCommandService _authenticationCommandService;
+        private readonly IAuthenticationQueryService _authenticationQueryService;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+        public AuthenticationController(IAuthenticationCommandService authenticationCommandService, IAuthenticationQueryService authenticationQueryService)
         {
-            _authenticationService = authenticationService;
+            _authenticationCommandService = authenticationCommandService;
+            _authenticationQueryService = authenticationQueryService;
         }
 
         [HttpPost("register")]
         public IActionResult Register(RegisterRequest request)
         {
-            var authResult = _authenticationService.Register(request.CompanyName, request.Email, request.Password);
+            var authResult = _authenticationCommandService.Register(request.CompanyName, request.Email, request.Password);
 
             var response = new AuthenticationResponse(
                 authResult.CompanyUser.Id,
@@ -31,7 +34,7 @@ namespace JobBoard.API.Controllers
         [HttpPost("login")]
         public IActionResult Login(LoginRequest request)
         {
-            var authResult = _authenticationService.Login(request.Email, request.Password);
+            var authResult = _authenticationQueryService.Login(request.Email, request.Password);
 
             var response = new AuthenticationResponse(
                 authResult.CompanyUser.Id,

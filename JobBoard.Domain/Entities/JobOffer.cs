@@ -17,8 +17,8 @@ namespace JobBoard.Domain.Entities
         public bool OnlineInterviewAvailable { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public ICollection<Skill> MainSkills { get; set; } = new List<Skill>();
-        public ICollection<Skill> SecondarySkills { get; set; } = new List<Skill>();
+        public ICollection<string> MainSkills { get; set; } = new List<string>();
+        public ICollection<string> SecondarySkills { get; set; } = new List<string>();
         public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
         public ICollection<Address> Addresses { get; set; } = new List<Address>();
     }

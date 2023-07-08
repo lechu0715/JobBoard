@@ -1,30 +1,15 @@
 ﻿using JobBoard.Application.Common.Interfaces.Persistence;
 using JobBoard.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JobBoard.Application.Services.JobOffers
 {
-    public class JobOfferService : IJobOfferService
+    public class JobOfferCommandService : IJobOfferCommandService
     {
         private readonly IJobOfferRepository _jobOfferRepository;
 
-        public JobOfferService(IJobOfferRepository jobOfferRepository)
+        public JobOfferCommandService(IJobOfferRepository jobOfferRepository)
         {
             _jobOfferRepository = jobOfferRepository;
-        }
-
-        public async Task<List<JobOffer>> GetAllJobOffers()
-        {
-            return await _jobOfferRepository.GetAllJobOffers();
-        }
-
-        public async Task<JobOffer> GetJobOfferById(int id)
-        {
-            return await _jobOfferRepository.GetJobOfferById(id);
         }
 
         public async Task AddJobOffer(JobOffer jobOffer)
