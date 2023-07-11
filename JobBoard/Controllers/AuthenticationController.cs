@@ -1,47 +1,58 @@
-﻿using JobBoard.Application.Services.Authentication.Commands;
-using JobBoard.Application.Services.Authentication.Queries;
+﻿using ErrorOr; 
 using JobBoard.Contracts.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using JobBoard.Domain.Common.Errors;
+using JobBoard.Application.Authentication.Commands.Register;
+using JobBoard.Application.Authentication.Common;
+using JobBoard.Application.Authentication.Queries.Login;
 
 namespace JobBoard.API.Controllers
 {
-    [ApiController]
     [Route("auth")]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : ApiController
     {
-        private readonly IAuthenticationCommandService _authenticationCommandService;
-        private readonly IAuthenticationQueryService _authenticationQueryService;
+        private readonly ISender _mediator;
 
-        public AuthenticationController(IAuthenticationCommandService authenticationCommandService, IAuthenticationQueryService authenticationQueryService)
+        public AuthenticationController(ISender mediator)
         {
-            _authenticationCommandService = authenticationCommandService;
-            _authenticationQueryService = authenticationQueryService;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterRequest request)
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
-            var authResult = _authenticationCommandService.Register(request.CompanyName, request.Email, request.Password);
+            var command = new RegisterCommand(request.CompanyName, request.Email, request.Password);
+            ErrorOr<AuthenticationResult> authResult = await _mediator.Send(command);
 
-            var response = new AuthenticationResponse(
-                authResult.CompanyUser.Id,
-                authResult.CompanyUser.CompanyName,
-                authResult.CompanyUser.Email,
-                authResult.Token);
-            return Ok(response);
+            return authResult.Match(
+                authResult => Ok(MapAuthResult(authResult)),
+                errors => Problem(errors));
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
-            var authResult = _authenticationQueryService.Login(request.Email, request.Password);
+            var query = new LoginQuery(request.Email, request.Password);
+            var authResult = await _mediator.Send(query);
 
-            var response = new AuthenticationResponse(
-                authResult.CompanyUser.Id,
-                authResult.CompanyUser.CompanyName,
-                authResult.CompanyUser.Email,
-                authResult.Token);
-            return Ok(response);
+            if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
+            {
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
+            }
+
+            return authResult.Match(
+                authResult => Ok(MapAuthResult(authResult)),
+                errors => Problem(errors));
+        }
+
+        private static AuthenticationResponse MapAuthResult(AuthenticationResult authResult)
+        {
+            return new AuthenticationResponse(
+                            authResult.CompanyUser.Id,
+                            authResult.CompanyUser.CompanyName,
+                            authResult.CompanyUser.Email,
+                            authResult.Token);
         }
     }
 }

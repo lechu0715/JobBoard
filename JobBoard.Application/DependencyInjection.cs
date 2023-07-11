@@ -1,7 +1,6 @@
-﻿using JobBoard.Application.Services.Authentication.Commands;
-using JobBoard.Application.Services.Authentication.Queries;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MediatR;
 using JobBoard.Application.Services.JobOffers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JobBoard.Application
 {
@@ -9,8 +8,7 @@ namespace JobBoard.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddScoped<IAuthenticationCommandService, AuthenticationCommandService>();
-            services.AddScoped<IAuthenticationQueryService, AuthenticationQueryService>();
+            services.AddMediatR(typeof(DependencyInjection).Assembly);
             services.AddScoped<IJobOfferCommandService, JobOfferCommandService>();
             services.AddScoped<IJobOfferQueryService, JobOfferQueryService>();
             return services;
