@@ -1,7 +1,6 @@
 ﻿using JobBoard.API.Controllers;
 using JobBoard.Application.JobOffers.Commands;
 using JobBoard.Application.JobOffers.Queries;
-using JobBoard.Application.Services.JobOffers;
 using JobBoard.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

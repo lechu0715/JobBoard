@@ -1,6 +1,8 @@
 ﻿using ErrorOr;
 using JobBoard.Application.Common.Interfaces.Persistence;
+using JobBoard.Domain.Entities;
 using MediatR;
+using JobBoard.Domain.Common.Errors;
 
 namespace JobBoard.Application.JobOffers.Commands
 {
@@ -13,9 +15,15 @@ namespace JobBoard.Application.JobOffers.Commands
             _jobOfferRepository = jobOfferRepository;
         }
 
-        public async Task<ErrorOr<Unit>> Handle(UpdateJobOfferCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Unit>> Handle(UpdateJobOfferCommand command, CancellationToken cancellationToken)
         {
-            await _jobOfferRepository.UpdateJobOffer(request.Id, request.JobOffer);
+            JobOffer jobOffer = await _jobOfferRepository.GetJobOfferById(command.Id);
+            if (jobOffer == null)
+            {
+                return Errors.JobOffers.NotFound;
+            }
+
+            await _jobOfferRepository.UpdateJobOffer(command.Id, command.JobOffer);
             return Unit.Value;
         }
     }

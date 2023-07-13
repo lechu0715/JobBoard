@@ -1,29 +1,23 @@
 ﻿using ErrorOr;
 using JobBoard.Application.Common.Interfaces.Persistence;
-using JobBoard.Application.Services.JobOffers;
 using JobBoard.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JobBoard.Application.JobOffers.Queries
 {
 
     public class GetJobOfferByIdQueryHandler : IRequestHandler<GetJobOfferByIdQuery, ErrorOr<JobOffer>>
     {
-        private readonly IJobOfferQueryService _jobOfferQueryService;
+        private readonly IJobOfferRepository _jobOfferRepository;
 
-        public GetJobOfferByIdQueryHandler(IJobOfferQueryService jobOfferQueryService)
+        public GetJobOfferByIdQueryHandler(IJobOfferRepository jobOfferRepository)
         {
-            _jobOfferQueryService = jobOfferQueryService;
+            _jobOfferRepository = jobOfferRepository;
         }
 
         public async Task<ErrorOr<JobOffer>> Handle(GetJobOfferByIdQuery query, CancellationToken cancellationToken)
         {
-            var jobOffer = await _jobOfferQueryService.GetJobOfferById(query.Id);
+            var jobOffer = await _jobOfferRepository.GetJobOfferById(query.Id);
 
             //if (jobOffer != null)
             //{
